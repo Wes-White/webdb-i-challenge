@@ -4,7 +4,7 @@ const AccountRouter = require('./accounts/accountsRouter');
 const server = express();
 
 server.use(express.json());
-server.use('/api/accounts', AccountRouter);
+server.use('/accounts', AccountRouter);
 
 server.get('/', (req, res) => {
   res.send('<h1>WebDB Challenge I</h2>');

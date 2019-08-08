@@ -11,12 +11,68 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id', (req, res) => {});
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const accountById = await db('accounts').where('id', id);
+    res.status(200).json(accountById);
+  } catch (err) {
+    res.status(500).json({ message: 'There was a problem with your request' });
+  }
+});
 
-router.post('/', (req, res) => {});
+router.post('/', async (req, res) => {
+  const accData = req.body;
+  try {
+    const acct = await db('accounts').insert(accData);
+    if (acct) {
+      res.status(201).json(acct);
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: 'We were unable to add the selected account.',
+      error: error
+    });
+  }
+});
 
-router.put('/:id', (req, res) => {});
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const changes = req.body;
+  try {
+    const count = await db('accounts')
+      .where({ id })
+      .updates(changes);
+    if (changes) {
+      res.status(200).json(changes);
+    } else {
+      res.status(400).json({
+        success: false,
+        message: 'We were unable to locate that account, pleaes check your id.'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, Error: error });
+  }
+});
 
-router.delete('/:id', (req, res) => {});
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const delAcct = await db('accounts')
+      .where({ id })
+      .del();
+    if (delAcct) {
+      res.status(200).json(delAcct);
+    } else {
+      res.status(400).json({
+        success: false,
+        message: 'We were unable to locate an account with that ID'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, Error: error });
+  }
+});
 
 module.exports = router;
